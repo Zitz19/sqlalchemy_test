@@ -75,11 +75,12 @@ class QuizAccessor(BaseAccessor):
         async with self.app.database.session() as session:
             session: AsyncSession
             for answer in answers:
-                session.add(AnswerModel(
+                ans = AnswerModel(
                     answer.title,
                     answer.is_correct,
                     question_id
-                ))
+                )
+                session.add(ans)
                 await session.commit()
         return answers
 
