@@ -22,5 +22,12 @@ class Database:
         self.session = sessionmaker(self._engine, expire_on_commit=False, future=True, class_=AsyncSession)
 
     async def disconnect(self, *_: list, **__: dict) -> None:
+        if self.session:
+            async with self.app.database.session() as session:
+                session: AsyncSession
+                async with session.begin():
+                    await session.execute('TRUNCATE admins CASCADE')
+                    await session.execute('TRUNCATE themes CASCADE')
+                await session.commit()
         if self._engine:
             await self._engine.dispose()

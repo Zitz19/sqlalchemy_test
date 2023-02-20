@@ -33,7 +33,6 @@ class AdminAccessor(BaseAccessor):
         )
         async with self.app.database.session() as session:
             session: AsyncSession
-            connection = session.connection()
             session.add(admin)
             await session.commit()
             await session.refresh(admin)
