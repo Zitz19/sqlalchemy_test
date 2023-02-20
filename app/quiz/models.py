@@ -8,13 +8,13 @@ from app.store.database.sqlalchemy_base import db
 
 @dataclass
 class Theme:
-    id: int | None
+    id: int
     title: str
 
 
 @dataclass
 class Question:
-    id: int | None
+    id: int
     title: str
     theme_id: int
     answers: list["Answer"]
