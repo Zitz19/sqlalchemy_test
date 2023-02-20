@@ -22,6 +22,5 @@ class Database:
         self.session = sessionmaker(self._engine, expire_on_commit=False, future=True, class_=AsyncSession)
 
     async def disconnect(self, *_: list, **__: dict) -> None:
-        pass
-        # if self._engine:
-        #     await self._engine.dispose()
+        if self._engine:
+            await self._engine.dispose()
