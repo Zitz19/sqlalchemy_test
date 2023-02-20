@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from hashlib import sha256
 from typing import Optional
 
+from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
+
 from app.store.database.sqlalchemy_base import db
 
 
@@ -21,4 +23,10 @@ class Admin:
 
 class AdminModel(db):
     __tablename__ = "admins"
-    pass
+
+    id = Column('id', Integer)
+    email = Column('email', String)
+    password = Column('password', String)
+    __table_args__ = (
+        PrimaryKeyConstraint('id', name='admin_id_pk'),
+    )
