@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.engine import ChunkedIteratorResult
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.base.base_accessor import BaseAccessor
 from app.quiz.models import (
@@ -71,42 +72,33 @@ class QuizAccessor(BaseAccessor):
     async def create_answers(
             self, question_id: int, answers: list[Answer]
     ) -> list[Answer]:
-        for answer in answers:
-            # query = insert(AnswerModel).values(
-            #    is_correct=answer.is_correct,
-            #    title=answer.title,
-            #    question_id=question_id
-            # )
-            async with self.app.database.session.begin() as session:
-                # await session.execute(query)
-                session.add(AnswerModel(
-                    is_correct=answer.is_correct,
-                    title=answer.title,
-                    question_id=question_id
-                ))
-                await session.commit()
+        async with self.app.database.session() as session:
+            session: AsyncSession
+            session.add_all([AnswerModel(
+                x.title,
+                x.is_correct,
+                question_id
+            ) for x in answers])
+            await session.commit()
         return answers
 
     async def create_question(
         self, title: str, theme_id: int, answers: list[Answer]
     ) -> Question:
-        async with self.app.database.session.begin() as session:
-            # await session.execute(query)
-            session.add(QuestionModel(
+        question = QuestionModel(
                 title=title,
                 theme_id=theme_id
-            ))
-            await session.commit()
-            res: ChunkedIteratorResult = await session.execute(
-                select(QuestionModel).where(QuestionModel.title == title)
             )
-            raw_res = res.scalars().all()
+        async with self.app.database.session() as session:
+            session: AsyncSession
+            session.add(question)
             await session.commit()
-        raw_answers = await self.create_answers(raw_res[0].id, answers)
+            await session.refresh(question)
+            raw_answers = await self.create_answers(question.id, answers)
         return Question(
-            id=raw_res[0].id,
-            theme_id=theme_id,
-            title=title,
+            id=question.id,
+            theme_id=question.theme_id,
+            title=question.title,
             answers=raw_answers
         )
 
