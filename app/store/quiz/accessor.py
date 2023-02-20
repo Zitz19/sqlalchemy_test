@@ -76,9 +76,9 @@ class QuizAccessor(BaseAccessor):
             session: AsyncSession
             for answer in answers:
                 ans = AnswerModel(
-                    answer.title,
-                    answer.is_correct,
-                    question_id
+                    title=answer.title,
+                    is_correct=answer.is_correct,
+                    question_id=question_id
                 )
                 session.add(ans)
                 await session.commit()
