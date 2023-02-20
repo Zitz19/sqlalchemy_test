@@ -74,12 +74,13 @@ class QuizAccessor(BaseAccessor):
     ) -> list[Answer]:
         async with self.app.database.session() as session:
             session: AsyncSession
-            session.add_all([AnswerModel(
-                x.title,
-                x.is_correct,
-                question_id
-            ) for x in answers])
-            await session.commit()
+            for answer in answers:
+                session.add(AnswerModel(
+                    answer.title,
+                    answer.is_correct,
+                    question_id
+                ))
+                await session.commit()
         return answers
 
     async def create_question(
