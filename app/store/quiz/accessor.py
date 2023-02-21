@@ -13,7 +13,7 @@ from app.quiz.models import (
 class QuizAccessor(BaseAccessor):
     async def create_theme(self, title: str) -> Theme:
         # query = insert(ThemeModel).values(title=title)
-        async with self.app.database.session.begin() as session:
+        async with self.app.database.session() as session:
             # await session.execute(query)
             session.add(ThemeModel(
                 title=title

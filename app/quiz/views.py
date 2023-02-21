@@ -1,6 +1,8 @@
 import aiohttp_session
 from aiohttp.web_exceptions import HTTPUnauthorized, HTTPForbidden, HTTPConflict, HTTPBadRequest, HTTPNotFound
 from aiohttp_apispec import querystring_schema, request_schema, response_schema
+
+from app.quiz.models import Answer
 from app.quiz.schemes import (
     ListQuestionSchema,
     QuestionSchema,
@@ -17,23 +19,20 @@ class ThemeAddView(AuthRequiredMixin, View):
     @request_schema(ThemeSchema)
     @response_schema(ThemeSchema)
     async def post(self):
-        @request_schema(ThemeSchema)
-        @response_schema(ThemeSchema)
-        async def post(self):
-            session = await aiohttp_session.get_session(self.request)
-            if not session:
-                raise HTTPUnauthorized
-            user = await self.store.admins.get_by_email(session['admin']['email'])
-            if not user or session['admin']['email'] != user.email:
-                raise HTTPForbidden
+        session = await aiohttp_session.get_session(self.request)
+        if not session:
+            raise HTTPUnauthorized
+        user = await self.store.admins.get_by_email(session['admin']['email'])
+        if not user or session['admin']['email'] != user.email:
+            raise HTTPForbidden
+        else:
+            title = self.data['title']
+            theme = await self.store.quizzes.get_theme_by_title(title)
+            if theme:
+                raise HTTPConflict
             else:
-                title = self.data['title']
-                theme = await self.store.quizzes.get_theme_by_title(title)
-                if theme:
-                    raise HTTPConflict
-                else:
-                    theme = await self.store.quizzes.create_theme(title=title)
-                    return json_response(data=ThemeSchema().dump(theme))
+                theme = await self.store.quizzes.create_theme(title=title)
+                return json_response(data=ThemeSchema().dump(theme))
 
 
 class ThemeListView(AuthRequiredMixin, View):
@@ -79,7 +78,11 @@ class QuestionAddView(AuthRequiredMixin, View):
                 raise HTTPNotFound
             if await self.store.quizzes.get_question_by_title(title):
                 raise HTTPConflict
-            question = await self.store.quizzes.create_question(title, theme_id, answers)
+            raw_answers = [Answer(
+                title=x['title'],
+                is_correct=x['is_correct']
+            ) for x in answers]
+            question = await self.store.quizzes.create_question(title, theme_id, raw_answers)
             return json_response(data=({'id': question.id} | self.data))
 
 
