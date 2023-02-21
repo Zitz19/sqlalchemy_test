@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from sqlalchemy import Column, Integer, UniqueConstraint, String, ForeignKey, Boolean
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 from app.store.database.sqlalchemy_base import db
 
@@ -31,6 +31,7 @@ class ThemeModel(db):
 
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False, unique=True)
+    questions = relationship('QuestionModel', cascade='all,delete', backref='theme_model')
     # __table_args__ = (
     #     UniqueConstraint('title', name='theme_title_uc'),
     # )
@@ -43,10 +44,11 @@ class QuestionModel(db):
     title = Column(String, nullable=False, unique=True)
     theme_id = Column(
         Integer,
-        ForeignKey("themes.id", ondelete="CASCADE"),
+        ForeignKey("themes.id", ondelete='CASCADE'),
         nullable=False
     )
-    answers = relationship('AnswerModel', back_populates='question')
+    answers = relationship('AnswerModel', cascade='all,delete', backref='question_model')
+    #theme = relationship('ThemeModel', backref=backref('questions', passive_deletes=True))
     # __table_args__ = (
     #     UniqueConstraint('title', name='question_title_uc'),
     # )
@@ -59,7 +61,7 @@ class AnswerModel(db):
     is_correct = Column(Boolean, nullable=False)
     question_id = Column(
         Integer,
-        ForeignKey("questions.id", ondelete="CASCADE"),
+        ForeignKey("questions.id", ondelete='CASCADE'),
         nullable=False
     )
-    question = relationship('QuestionModel',back_populates='answers')
+    #question = relationship('QuestionModel', backref=backref('answers', passive_deletes=True))
