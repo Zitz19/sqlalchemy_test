@@ -30,26 +30,26 @@ class ThemeModel(db):
     __tablename__ = "themes"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String, nullable=False)
-    __table_args__ = (
-        UniqueConstraint('title', name='theme_title_uc'),
-    )
+    title = Column(String, nullable=False, unique=True)
+    # __table_args__ = (
+    #     UniqueConstraint('title', name='theme_title_uc'),
+    # )
 
 
 class QuestionModel(db):
     __tablename__ = "questions"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String, nullable=False)
+    title = Column(String, nullable=False, unique=True)
     theme_id = Column(
         Integer,
         ForeignKey("themes.id", ondelete="CASCADE"),
         nullable=False
     )
-    answers = relationship('AnswerModel', collection_class=list)
-    __table_args__ = (
-        UniqueConstraint('title', name='question_title_uc'),
-    )
+    answers = relationship('AnswerModel', back_populates='question')
+    # __table_args__ = (
+    #     UniqueConstraint('title', name='question_title_uc'),
+    # )
 
 
 class AnswerModel(db):
@@ -62,3 +62,4 @@ class AnswerModel(db):
         ForeignKey("questions.id", ondelete="CASCADE"),
         nullable=False
     )
+    question = relationship('QuestionModel',back_populates='answers')
