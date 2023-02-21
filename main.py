@@ -1,3 +1,4 @@
+# dummy comment for tests
 import os
 
 from app.web.app import setup_app
