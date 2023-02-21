@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from sqlalchemy import Column, Integer, UniqueConstraint, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, UniqueConstraint, String, ForeignKey, Boolean, Sequence
 from sqlalchemy.orm import relationship, backref
 
 from app.store.database.sqlalchemy_base import db
@@ -30,18 +30,18 @@ class ThemeModel(db):
     __tablename__ = "themes"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String, nullable=False, unique=True)
+    title = Column(String, unique=True, nullable=False)
 
 
 class QuestionModel(db):
     __tablename__ = "questions"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String, nullable=False, unique=True)
+    title = Column(String, unique=True, nullable=False)
     theme_id = Column(
         Integer,
         ForeignKey("themes.id", ondelete='CASCADE'),
-        nullable=False
+        nullable = False
     )
     answers = relationship('AnswerModel', backref='question_model')
 
@@ -50,7 +50,8 @@ class QuestionModel(db):
 class AnswerModel(db):
     __tablename__ = "answers"
 
-    title = Column(String, primary_key=True)
+    id = Column(Integer, Sequence('answers_id_seq'), primary_key=True)
+    title = Column(String, unique=True, nullable=False)
     is_correct = Column(Boolean, nullable=False)
     question_id = Column(
         Integer,

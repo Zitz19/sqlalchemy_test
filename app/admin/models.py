@@ -24,9 +24,9 @@ class Admin:
 class AdminModel(db):
     __tablename__ = "admins"
 
-    id = Column('id', Integer)
+    id = Column('id', Integer, primary_key=True)
     email = Column('email', String)
     password = Column('password', String)
-    __table_args__ = (
-        PrimaryKeyConstraint('id', name='admin_id_pk'),
-    )
+    # __table_args__ = (
+    #     PrimaryKeyConstraint('id', name='admin_id_pk'),
+    # )

@@ -1,8 +1,8 @@
-"""initial
+"""B
 
-Revision ID: f3c3f61c2315
-Revises: 
-Create Date: 2023-02-21 21:32:27.528715
+Revision ID: a1baba823202
+Revises: 5db363f3e7ed
+Create Date: 2023-02-22 00:50:27.576480
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f3c3f61c2315'
-down_revision = None
+revision = 'a1baba823202'
+down_revision = '5db363f3e7ed'
 branch_labels = None
 depends_on = None
 
@@ -22,7 +22,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(), nullable=True),
     sa.Column('password', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id', name='admin_id_pk')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('themes',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -39,11 +39,13 @@ def upgrade() -> None:
     sa.UniqueConstraint('title')
     )
     op.create_table('answers',
+    sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(), nullable=False),
     sa.Column('is_correct', sa.Boolean(), nullable=False),
     sa.Column('question_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['question_id'], ['questions.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('title')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('title')
     )
     # ### end Alembic commands ###
 
