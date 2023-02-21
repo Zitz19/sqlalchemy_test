@@ -31,10 +31,6 @@ class ThemeModel(db):
 
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False, unique=True)
-    questions = relationship('QuestionModel', cascade='all,delete', backref='theme_model')
-    # __table_args__ = (
-    #     UniqueConstraint('title', name='theme_title_uc'),
-    # )
 
 
 class QuestionModel(db):
@@ -47,11 +43,8 @@ class QuestionModel(db):
         ForeignKey("themes.id", ondelete='CASCADE'),
         nullable=False
     )
-    answers = relationship('AnswerModel', cascade='all,delete', backref='question_model')
-    #theme = relationship('ThemeModel', backref=backref('questions', passive_deletes=True))
-    # __table_args__ = (
-    #     UniqueConstraint('title', name='question_title_uc'),
-    # )
+    answers = relationship('AnswerModel', backref='question_model')
+
 
 
 class AnswerModel(db):
@@ -64,4 +57,3 @@ class AnswerModel(db):
         ForeignKey("questions.id", ondelete='CASCADE'),
         nullable=False
     )
-    #question = relationship('QuestionModel', backref=backref('answers', passive_deletes=True))

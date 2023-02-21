@@ -60,7 +60,7 @@ async def clear_db(server):
             await session.execute(text(f"TRUNCATE {table} CASCADE"))
             await session.execute(text(f"ALTER SEQUENCE {table}_id_seq RESTART WITH 1"))
 
-            await session.commit()
+        await session.commit()
         connection.close()
 
     except Exception as err:

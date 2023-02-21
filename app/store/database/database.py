@@ -17,7 +17,7 @@ class Database:
 
     async def connect(self, *_: list, **__: dict) -> None:
         self._db = db
-        database_url = f'postgresql+asyncpg://{self.app.config.database.user}:{self.app.config.database.password}@{self.app.config.database.host}/{self.app.config.database.database}'
+        database_url = 'postgresql+asyncpg://kts_user:kts_pass@localhost/kts'
         self._engine = create_async_engine(database_url, echo=True, future=True)
         self.session = sessionmaker(self._engine, expire_on_commit=False, future=True, class_=AsyncSession)
 
